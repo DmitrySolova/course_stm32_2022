@@ -1,0 +1,3 @@
+/home/bag/Groups/933/KR/Borisov/c_filter/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/bag/Groups/933/KR/Borisov/c_filter/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/bag/Groups/933/KR/Borisov/c_filter/cmake-build-debug/CMakeFiles/c_filter.dir

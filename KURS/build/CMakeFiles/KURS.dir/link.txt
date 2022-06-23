@@ -1,0 +1,1 @@
+/usr/bin/arm-none-eabi-gcc -T/home/stud/Documents/Borisov/KURS/toolchain/stm32f407vgt6.ld -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard -specs=nano.specs -lc -lnosys -Wl,-Map=KURS.map,--cref -Wl,--gc-sections CMakeFiles/KURS.dir/src/main.c.o -o KURS  ../../libopencm3/lib/libopencm3_stm32f4.a -lm 

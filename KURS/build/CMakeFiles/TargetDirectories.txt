@@ -1,0 +1,4 @@
+/home/stud/Documents/Borisov/KURS/build/CMakeFiles/KURS.dir
+/home/stud/Documents/Borisov/KURS/build/CMakeFiles/flash.dir
+/home/stud/Documents/Borisov/KURS/build/CMakeFiles/edit_cache.dir
+/home/stud/Documents/Borisov/KURS/build/CMakeFiles/rebuild_cache.dir

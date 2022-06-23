@@ -1,0 +1,221 @@
+#include <stdio.h>
+#include <stdint.h>
+#include <math.h>
+#include <stdlib.h>
+
+#define SIZE 5
+
+double digitalFilter(double data);
+double IIRFilter(double x);
+double *v;  // pointer to the buffer
+
+// Переменные-характеристики фильтра, входные данные, кэфы, выходы y, необходимые для расчета
+double x[] = {1241,1483,1716,1930,2118,2273,2387,2458,2482,2458,2387,2273,2118,1930,1716,1483,1241,999,766,551,363,209,94,24,0,24,94,209,363,551,766,999,1241,1483,1716,1930,2118,2273,2387,2458};
+double b[] = {0.00319806247283222151, 0, -0.00639612494566444301, 0, 0.00319806247283222151};
+double a[] = {1, -3.78125206442570505, 5.44829440482254412, -3.54414088511948755, 0.878834866871245235};
+
+
+//
+int i = 0;
+int N = 5;
+
+int overflow = 0;
+
+// очередь
+double items[SIZE];
+int front = -1, rear = -1;
+
+// Реализация круговых очередей в  C
+
+// Проверяем, не заполнена ли очередь
+int isFull() {
+    if ((front == rear + 1) || (front == 0 && rear == SIZE - 1)) return 1;
+    return 0;
+}
+
+// Проверяем, не пуста ли очередь
+int isEmpty() {
+    if (front == -1) return 1;
+    return 0;
+}
+
+// Добавляем элемент
+void enQueue(double element) {
+    if (isFull()) {
+        //printf("\n Очередь заполнена \n");
+    } else {
+        if (front == -1) front = 0;
+        rear = (rear + 1) % SIZE;
+        items[rear] = element;
+        //printf("\n Добавлен элемент -> %lf\n", element);
+    }
+}
+
+// Удаляем элемент
+double deQueue() {
+    double element;
+    if (isEmpty()) {
+        //printf("\n Очередь пуста \n");
+        return (-1);
+    } else {
+        element = items[front];
+        if (front == rear) {
+            front = -1;
+            rear = -1;
+        }
+            // Внутри Q только один элемент, поэтому очередь сбрасывается в начальное
+            // cостояние после удаления последнего элемента
+        else {
+            front = (front + 1) % SIZE;
+        }
+        //printf("\n Удаленный элемент -> %lf \n", element);
+        return (element);
+    }
+}
+
+// Выводим очередь в консоль
+void display() {
+    int i;
+    if (isEmpty())
+        printf(" \n Пустая очередь\n");
+    else {
+        printf("\n Указатель FRONT -> %d ", front);
+        printf("\n Элементы -> ");
+        for (i = front; i != rear; i = (i + 1) % SIZE) {
+            printf("%lf ", items[i]);
+        }
+        printf("%lf ", items[i]);
+        printf("\n Rear -> %d \n", rear);
+    }
+}
+
+
+int main()
+{
+    printf("Program begin\n");
+
+    // вычисляем размер массива
+    int x_size = sizeof(x) / sizeof(x[0]);
+
+    v = (double *) calloc(N-1, sizeof(double));
+
+    int16_t data_filtered = 0;
+    double data_filtered_double = 0;
+
+    for (int j = 0; j < x_size; j++) {
+
+        //data_filtered_double = digitalFilter(x[j]);
+
+        data_filtered_double = IIRFilter(x[j]);
+
+        data_filtered = round(data_filtered_double) + 2047;
+        //display();
+
+        printf("y_%d = %lf\n", j + 1, data_filtered_double);
+
+        i++;
+
+    }
+
+    return 0;
+}
+
+double IIRFilter(double x){
+    double y = 0;   // output
+    int i = 0;  // loop index
+    y = v[0] + b[0]*x;
+
+    // update buffer for next iteration
+    for (; i < N-2; i++)
+        v[i] = v[i+1] + b[i+1]*x - a[i+1]*y;
+
+    v[N-2] = b[N-1]*x - a[N-1]*y;
+    return y;
+}
+
+double digitalFilter(double data) {
+
+    double sum = 0;
+
+    // Проверка на "перегрузку" массива y фильтра, если он перегружен, то включается 2 алгорим, если нет, то 1ый
+    if (i == 5) {
+        overflow = 1;
+        i = 0;
+    }
+
+    // Алгоритм 1. Первые 5 элементов фильтра считаются по особому
+    if (overflow == 0) {
+
+        for(int j = 0; j < 5; j++) {
+            if(i - j >= 0)
+                sum += (b[j] * data);
+        }
+
+        for(int j = 0; j < 5; j++) {
+            if(i - j >= 0)
+                sum -= (a[j] * items[i - j]);
+        }
+
+    } else {
+
+        i++;
+
+        deQueue();
+
+        // display();
+        // printf("Элементы массива: ");
+        // for(i = 0; i < 5; i++) {
+        //     printf("%lf, ", items[i]);
+        // }
+        // printf("\n");
+
+        double temp_items[5];
+
+        if (front > rear) {
+            int j = 0;
+
+            for (int i = front; i < 5; i++) {
+                temp_items[j] = items[i];
+                j++;
+            }
+
+            for (int i = 0; i < front - 1; i++) {
+                temp_items[j] = items[i];
+                j++;
+            }
+
+        } else {
+            int j = 0;
+
+            for (int i = front; i <= rear; i++) {
+                temp_items[j] = items[i];
+                j++;
+            }
+
+        }
+
+        double d4 = 0;
+        double d3 = 0;
+        double d2 = 0;
+        double d1 = 0;
+
+        d4 = b[4] * data - a[4] * temp_items[0];
+        d3 = b[3] * data - a[3] * temp_items[1] + d4;
+        d2 = b[2] * data - a[2] * temp_items[2] + d3;
+        d1 = b[1] * data - a[1] * temp_items[3] + d2;
+        sum = b[0] * data + d1;
+
+    }
+
+    //sum /= a[0];
+
+    //old_y[i] = sum;
+
+    enQueue(sum);
+
+    if (overflow == 1) {
+        //display();
+    }
+
+    return sum;
+}

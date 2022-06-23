@@ -1,0 +1,13 @@
+"C:\Program Files\JetBrains\CLion 2022.1.1\bin\cmake\win\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug -G "Unix Makefiles" -S C:\Users\SoloPC\Desktop\Flash\course\Borisov\Borisov\KURS -B C:\Users\SoloPC\Desktop\Flash\course\Borisov\Borisov\KURS\cmake-build-debug
+ИНФОРМАЦИЯ: не удается найти файлы по заданным шаблонам.
+CMake Error at toolchain/arm-none-eabi-gcc.cmake:21 (get_filename_component):
+  get_filename_component called with incorrect number of arguments
+Call Stack (most recent call first):
+  C:/Program Files/JetBrains/CLion 2022.1.1/bin/cmake/win/share/cmake-3.22/Modules/CMakeDetermineSystem.cmake:124 (include)
+  CMakeLists.txt:12 (project)
+
+
+CMake Error: CMake was unable to find a build program corresponding to "Unix Makefiles".  CMAKE_MAKE_PROGRAM is not set.  You probably need to select a different build tool.
+CMake Error: CMAKE_C_COMPILER not set, after EnableLanguage
+CMake Error: CMAKE_ASM_COMPILER not set, after EnableLanguage
+-- Configuring incomplete, errors occurred!
